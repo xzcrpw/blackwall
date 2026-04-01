@@ -1,0 +1,27 @@
+# Blackwall Configuration
+
+[network]
+interface = "eth0"
+xdp_mode = "generic"
+
+[thresholds]
+entropy_anomaly = 6000
+
+[tarpit]
+enabled = true
+port = 2222
+base_delay_ms = 100
+max_delay_ms = 30000
+jitter_ms = 500
+
+[ai]
+enabled = true
+ollama_url = "http://localhost:11434"
+model = "llama3.2:3b"
+fallback_model = "qwen3:1.7b"
+max_tokens = 512
+timeout_ms = 30000
+
+[rules]
+blocklist = []
+allowlist = ["127.0.0.1"]

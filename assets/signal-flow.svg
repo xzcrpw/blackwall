@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="520" viewBox="0 0 1400 520" role="img" aria-label="Blackwall signal flow">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0A1122"/>
+      <stop offset="100%" stop-color="#1B1730"/>
+    </linearGradient>
+    <style>
+      .box { fill:#131E3B; stroke:#3A4E82; stroke-width:2; rx:14; }
+      .txt { fill:#EEF3FF; font:600 18px 'Segoe UI', Arial, sans-serif; }
+      .sub { fill:#9FB1D6; font:500 14px 'Segoe UI', Arial, sans-serif; }
+      .title { fill:#F3F8FF; font:700 30px 'Segoe UI', Arial, sans-serif; }
+      .a { stroke:#74C0FF; stroke-width:3; marker-end:url(#m); }
+    </style>
+    <marker id="m" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <polygon points="0,0 10,5 0,10" fill="#74C0FF"/>
+    </marker>
+  </defs>
+  <rect width="1400" height="520" fill="url(#bg3)"/>
+  <text x="70" y="70" class="title">Threat Signal Flow</text>
+
+  <rect x="70" y="150" width="220" height="120" class="box"/>
+  <text x="95" y="198" class="txt">Packet Ingress</text>
+  <text x="95" y="224" class="sub">eth0 / xdp path</text>
+
+  <rect x="360" y="150" width="250" height="120" class="box"/>
+  <text x="385" y="198" class="txt">Kernel Detection</text>
+  <text x="385" y="224" class="sub">JA4 + DPI + entropy</text>
+
+  <rect x="680" y="150" width="250" height="120" class="box"/>
+  <text x="705" y="198" class="txt">Event Correlation</text>
+  <text x="705" y="224" class="sub">behavioral state machine</text>
+
+  <rect x="1000" y="80" width="300" height="120" class="box"/>
+  <text x="1025" y="128" class="txt">Mitigation Path</text>
+  <text x="1025" y="154" class="sub">drop / redirect / blocklist</text>
+
+  <rect x="1000" y="240" width="300" height="120" class="box"/>
+  <text x="1025" y="288" class="txt">Intelligence Path</text>
+  <text x="1025" y="314" class="sub">pcap + distributed sync</text>
+
+  <line x1="290" y1="210" x2="360" y2="210" class="a"/>
+  <line x1="610" y1="210" x2="680" y2="210" class="a"/>
+  <line x1="930" y1="190" x2="1000" y2="140" class="a"/>
+  <line x1="930" y1="230" x2="1000" y2="300" class="a"/>
+</svg>

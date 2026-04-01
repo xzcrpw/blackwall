@@ -1,0 +1,10 @@
+/target
+**/target
+*.o
+.vscode/
+extract_code.ps1
+my_code.txt
+CLAUDE.md
+README.old.md
+.claude/
+context/

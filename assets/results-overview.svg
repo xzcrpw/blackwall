@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760" role="img" aria-label="Blackwall result cards">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#08101E"/>
+      <stop offset="100%" stop-color="#141B2F"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#111A33"/>
+      <stop offset="100%" stop-color="#1B2442"/>
+    </linearGradient>
+    <style>
+      .h1 { fill:#F3F8FF; font:700 32px 'Segoe UI', Arial, sans-serif; }
+      .label { fill:#9FB5DD; font:600 16px 'Segoe UI', Arial, sans-serif; }
+      .term { fill:url(#panel); stroke:#334B84; stroke-width:2; rx:14; }
+      .mono { fill:#E9F1FF; font:600 16px 'JetBrains Mono', Consolas, monospace; }
+      .ok { fill:#60E7A7; }
+      .warn { fill:#FFC05A; }
+      .err { fill:#FF6E6E; }
+      .dot { rx:6; }
+    </style>
+  </defs>
+
+  <rect width="1400" height="760" fill="url(#bg2)"/>
+  <text x="70" y="68" class="h1">Blackwall - Visual Results</text>
+  <text x="70" y="98" class="label">Terminal-style snapshots (SVG) for README presentation</text>
+
+  <rect x="70" y="130" width="1260" height="260" class="term"/>
+  <rect x="96" y="152" width="12" height="12" class="dot err"/>
+  <rect x="116" y="152" width="12" height="12" class="dot warn"/>
+  <rect x="136" y="152" width="12" height="12" class="dot ok"/>
+  <text x="170" y="164" class="label">test + lint run</text>
+
+  <text x="100" y="205" class="mono">$ cargo clippy --workspace -- -D warnings</text>
+  <text x="100" y="236" class="mono ok">Finished dev [unoptimized + debuginfo] target(s) in 4.81s</text>
+  <text x="100" y="272" class="mono">$ cargo test --workspace</text>
+  <text x="100" y="303" class="mono ok">test result: ok. 123 passed; 0 failed; 0 ignored</text>
+  <text x="100" y="339" class="mono">$ cargo xtask build-ebpf</text>
+  <text x="100" y="370" class="mono ok">eBPF artifacts compiled successfully</text>
+
+  <rect x="70" y="430" width="610" height="260" class="term"/>
+  <rect x="96" y="452" width="12" height="12" class="dot err"/>
+  <rect x="116" y="452" width="12" height="12" class="dot warn"/>
+  <rect x="136" y="452" width="12" height="12" class="dot ok"/>
+  <text x="170" y="464" class="label">runtime status</text>
+  <text x="100" y="506" class="mono">[INFO] blackwall: attaching XDP program to eth0</text>
+  <text x="100" y="537" class="mono">[INFO] feeds: synced 2 feeds, 17,412 indicators</text>
+  <text x="100" y="568" class="mono">[INFO] behavior: suspicious ip=203.0.113.52 score=83</text>
+  <text x="100" y="599" class="mono ok">[INFO] action: redirected to tarpit</text>
+  <text x="100" y="630" class="mono">[INFO] pcap: capture started for flagged ip</text>
+
+  <rect x="720" y="430" width="610" height="260" class="term"/>
+  <rect x="746" y="452" width="12" height="12" class="dot err"/>
+  <rect x="766" y="452" width="12" height="12" class="dot warn"/>
+  <rect x="786" y="452" width="12" height="12" class="dot ok"/>
+  <text x="820" y="464" class="label">tarpit session snapshot</text>
+  <text x="750" y="506" class="mono">Ubuntu 24.04.2 LTS web-prod-03 tty1</text>
+  <text x="750" y="537" class="mono">root@web-prod-03:~# ls -la</text>
+  <text x="750" y="568" class="mono">drwxr-xr-x 2 root root 4096 Apr 01 12:31 .ssh</text>
+  <text x="750" y="599" class="mono">root@web-prod-03:~# cat /etc/passwd</text>
+  <text x="750" y="630" class="mono ok">[deception] full transcript stored</text>
+</svg>
