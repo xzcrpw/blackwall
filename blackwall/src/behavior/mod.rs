@@ -9,4 +9,6 @@ mod profile;
 mod transitions;
 
 pub use profile::{BehaviorPhase, BehaviorProfile};
-pub use transitions::{TransitionVerdict, evaluate_transitions};
+pub use transitions::{
+    SUSPICION_INCREMENT, SUSPICION_MAX, TransitionVerdict, evaluate_transitions,
+};

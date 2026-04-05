@@ -30,7 +30,10 @@ use std::sync::Arc;
 use ai::batch::EventBatcher;
 use ai::classifier::{ThreatClassifier, ThreatVerdict};
 use ai::client::OllamaClient;
-use behavior::{BehaviorPhase, BehaviorProfile, TransitionVerdict, evaluate_transitions};
+use behavior::{
+    BehaviorPhase, BehaviorProfile, SUSPICION_INCREMENT, SUSPICION_MAX, TransitionVerdict,
+    evaluate_transitions,
+};
 use feeds::FeedSource;
 use ja4::assembler::Ja4Assembler;
 use ja4::db::Ja4Database;
@@ -551,7 +554,8 @@ async fn process_events(
                 let profile = profiles
                     .entry(dpi_event.src_ip)
                     .or_insert_with(BehaviorProfile::new);
-                profile.suspicion_score = (profile.suspicion_score + 15.0).min(100.0);
+                profile.suspicion_score =
+                    (profile.suspicion_score + SUSPICION_INCREMENT).min(SUSPICION_MAX);
             } else {
                 tracing::trace!(
                     %src_addr,

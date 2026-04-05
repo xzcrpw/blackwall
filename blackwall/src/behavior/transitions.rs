@@ -33,9 +33,9 @@ const TRUSTED_AGE_SECS: u64 = 300;
 /// Minimum packets for Trusted promotion.
 const TRUSTED_PACKET_THRESHOLD: u64 = 100;
 /// Suspicion score increase per escalation event.
-const SUSPICION_INCREMENT: f32 = 0.15;
+pub const SUSPICION_INCREMENT: f32 = 0.15;
 /// Maximum suspicion score.
-const SUSPICION_MAX: f32 = 1.0;
+pub const SUSPICION_MAX: f32 = 1.0;
 /// Suspicion decay per evaluation when no escalation.
 const SUSPICION_DECAY: f32 = 0.02;
 
