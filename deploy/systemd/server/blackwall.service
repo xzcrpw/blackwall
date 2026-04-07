@@ -1,0 +1,18 @@
+[Unit]
+Description=Blackwall Adaptive eBPF Firewall
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/blackwall
+ExecStart=/opt/blackwall/blackwall /opt/blackwall/config.toml
+Environment=BLACKWALL_EBPF_PATH=/opt/blackwall/blackwall-ebpf
+Environment=RUST_LOG=info
+Restart=on-failure
+RestartSec=5
+LimitMEMLOCK=infinity
+AmbientCapabilities=CAP_BPF CAP_NET_ADMIN CAP_PERFMON CAP_SYS_PTRACE
+
+[Install]
+WantedBy=multi-user.target

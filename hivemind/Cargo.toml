@@ -1,0 +1,50 @@
+[package]
+name = "hivemind"
+version = "0.1.0"
+edition = "2021"
+description = "HiveMind Threat Mesh — decentralized P2P threat intelligence network"
+
+[features]
+default = []
+# Feature-gated real Groth16 ZK-SNARK circuits (requires bellman + bls12_381).
+# V1.0 uses ring-only commit-and-sign. Enable for Phase 2+.
+zkp-groth16 = ["bellman", "bls12_381"]
+# Feature-gated real FHE for encrypted gradient aggregation (requires tfhe).
+# V1.0 uses AES-256-GCM (not homomorphic). Enable for Phase 3+.
+fhe-real = ["tfhe"]
+
+[dependencies]
+common = { path = "../common", default-features = false, features = ["user"] }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+toml = { workspace = true }
+ring = { workspace = true }
+hyper = { workspace = true }
+hyper-util = { workspace = true }
+http-body-util = { workspace = true }
+nix = { workspace = true, features = ["user"] }
+libp2p = { version = "0.54", features = [
+    "tokio",
+    "quic",
+    "noise",
+    "gossipsub",
+    "kad",
+    "mdns",
+    "macros",
+    "identify",
+] }
+
+# ZKP dependencies (feature-gated)
+bellman = { version = "0.14", optional = true }
+bls12_381 = { version = "0.8", optional = true }
+
+# FHE dependency (feature-gated) — real homomorphic encryption
+tfhe = { version = "0.8", optional = true, features = ["shortint", "x86_64-unix"] }
+
+[[bin]]
+name = "hivemind"
+path = "src/main.rs"

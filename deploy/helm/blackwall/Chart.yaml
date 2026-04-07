@@ -1,0 +1,16 @@
+apiVersion: v2
+name: blackwall
+description: eBPF-powered AI firewall with XDP native DNAT, TCP tarpit deception, and P2P threat intelligence
+type: application
+version: 0.1.0
+appVersion: "2.0.0"
+keywords:
+  - ebpf
+  - xdp
+  - firewall
+  - honeypot
+  - ai
+  - security
+maintainers:
+  - name: Blackwall Team
+home: https://github.com/blackwall-fw/blackwall

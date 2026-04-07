@@ -1,0 +1,14 @@
+[Unit]
+Description=Blackwall HiveMind API
+After=blackwall-hivemind.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/blackwall
+ExecStart=/opt/blackwall/bin/hivemind-api
+Environment=RUST_LOG=info
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

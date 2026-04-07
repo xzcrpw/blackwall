@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: blackwall
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  config.toml: |
+    [network]
+    interface = {{ .Values.network.interface | quote }}
+    xdp_mode = {{ .Values.network.xdpMode | quote }}
+
+    [tarpit]
+    enabled = {{ .Values.tarpit.enabled }}
+    port = {{ .Values.tarpit.port }}
+    base_delay_ms = {{ .Values.tarpit.baseDelayMs }}
+    max_delay_ms = {{ .Values.tarpit.maxDelayMs }}
+    jitter_ms = {{ .Values.tarpit.jitterMs }}
+
+    [ai]
+    enabled = {{ .Values.ai.enabled }}
+    ollama_url = {{ .Values.ai.ollamaUrl | quote }}
+    model = {{ .Values.ai.model | quote }}
+    fallback_model = {{ .Values.ai.fallbackModel | quote }}
+    max_tokens = {{ .Values.ai.maxTokens }}
+    timeout_ms = {{ .Values.ai.timeoutMs }}
+
+    [feeds]
+    enabled = {{ .Values.feeds.enabled }}
+    refresh_interval_secs = {{ .Values.feeds.refreshIntervalSecs }}
+
+    [metrics]
+    enabled = {{ .Values.metrics.enabled }}
+    port = {{ .Values.metrics.port }}

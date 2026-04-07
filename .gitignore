@@ -1,0 +1,6 @@
+/target
+**/target
+*.o
+.vscode/
+.claude/
+context/

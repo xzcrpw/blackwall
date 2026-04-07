@@ -1,0 +1,8 @@
+[Unit]
+Description=Blackwall health check
+
+[Service]
+Type=oneshot
+ExecStart=/opt/blackwall/healthcheck.sh
+StandardOutput=append:/var/log/blackwall-health.log
+StandardError=append:/var/log/blackwall-health.log

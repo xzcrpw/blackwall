@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="860" viewBox="0 0 1400 860" role="img" aria-label="Blackwall architecture diagram">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#060A1A"/>
+      <stop offset="100%" stop-color="#0E1328"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#111933"/>
+      <stop offset="100%" stop-color="#171F3E"/>
+    </linearGradient>
+    <style>
+      .title { fill:#F8FAFF; font:700 34px 'Segoe UI', Arial, sans-serif; }
+      .subtitle { fill:#9FB1DA; font:500 17px 'Segoe UI', Arial, sans-serif; }
+      .box { fill:url(#card); stroke:#2C3C72; stroke-width:2; rx:16; }
+      .hot { stroke:#FF4D4D; }
+      .txt { fill:#EAF0FF; font:600 19px 'Segoe UI', Arial, sans-serif; }
+      .small { fill:#AFC1E8; font:500 15px 'Segoe UI', Arial, sans-serif; }
+      .arrow { stroke:#6EC1FF; stroke-width:3; marker-end:url(#arrow); }
+      .arrow-hot { stroke:#FF6B6B; stroke-width:3; marker-end:url(#arrowHot); }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <polygon points="0,0 10,5 0,10" fill="#6EC1FF"/>
+    </marker>
+    <marker id="arrowHot" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <polygon points="0,0 10,5 0,10" fill="#FF6B6B"/>
+    </marker>
+    <marker id="arrowFeed" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <polygon points="0,0 10,5 0,10" fill="#4ADE80"/>
+    </marker>
+    <style>
+      .arrow-feed { stroke:#4ADE80; stroke-width:2.5; stroke-dasharray:8,4; marker-end:url(#arrowFeed); }
+      .feed-label { fill:#4ADE80; font:500 13px 'Segoe UI', Arial, sans-serif; }
+    </style>
+  </defs>
+
+  <rect width="1400" height="860" fill="url(#bg)"/>
+  <text x="70" y="70" class="title">The Blackwall - High-Level Architecture</text>
+  <text x="70" y="102" class="subtitle">Kernel fast path + behavioral engine + AI deception mesh</text>
+
+  <rect x="70" y="150" width="230" height="88" class="box"/>
+  <text x="95" y="186" class="txt">Internet Traffic</text>
+  <text x="95" y="212" class="small">Inbound + outbound packets</text>
+
+  <rect x="370" y="130" width="320" height="128" class="box hot"/>
+  <text x="395" y="175" class="txt">eBPF/XDP + TC Layer</text>
+  <text x="395" y="201" class="small">JA4, entropy, DPI tail-calls</text>
+  <text x="395" y="223" class="small">PASS / DROP / REDIRECT</text>
+
+  <rect x="770" y="150" width="260" height="88" class="box"/>
+  <text x="795" y="186" class="txt">RingBuf Events</text>
+  <text x="795" y="212" class="small">Zero-copy kernel telemetry</text>
+
+  <rect x="1110" y="130" width="220" height="128" class="box"/>
+  <text x="1135" y="175" class="txt">Threat Feeds</text>
+  <text x="1135" y="201" class="small">Firehol + abuse.ch</text>
+  <text x="1135" y="223" class="small">Hourly map updates</text>
+
+  <rect x="420" y="350" width="430" height="130" class="box hot"/>
+  <text x="445" y="398" class="txt">Behavioral Engine (userspace)</text>
+  <text x="445" y="424" class="small">Per-IP state machine, fast + AI verdicts</text>
+  <text x="445" y="446" class="small">New -> Suspicious -> Malicious -> Blocked</text>
+
+  <rect x="140" y="560" width="340" height="170" class="box"/>
+  <text x="165" y="603" class="txt">Deception Mesh / Tarpit</text>
+  <text x="165" y="629" class="small">SSH bash simulation</text>
+  <text x="165" y="651" class="small">HTTP fake admin + MySQL + DNS</text>
+  <text x="165" y="673" class="small">Prompt-injection defense</text>
+
+  <rect x="530" y="560" width="300" height="170" class="box"/>
+  <text x="555" y="603" class="txt">PCAP Capture</text>
+  <text x="555" y="629" class="small">Flagged IP traffic only</text>
+  <text x="555" y="651" class="small">Rotating compressed files</text>
+
+  <rect x="890" y="560" width="380" height="170" class="box"/>
+  <text x="915" y="603" class="txt">Distributed Controller</text>
+  <text x="915" y="629" class="small">Peer sync for blocked IPs + JA4</text>
+  <text x="915" y="651" class="small">One sensor learns, all nodes block</text>
+
+  <!-- Data flow: Internet → eBPF → RingBuf → Behavioral Engine -->
+  <line x1="300" y1="194" x2="370" y2="194" class="arrow"/>
+  <line x1="690" y1="194" x2="770" y2="194" class="arrow"/>
+  <line x1="900" y1="258" x2="720" y2="350" class="arrow"/>
+  <line x1="580" y1="258" x2="620" y2="350" class="arrow-hot"/>
+
+  <!-- Threat Feeds → Behavioral Engine (external intel) -->
+  <line x1="1220" y1="258" x2="850" y2="370" class="arrow-feed"/>
+  <text x="970" y="300" class="feed-label">intel updates</text>
+
+  <!-- Behavioral Engine → eBPF/XDP (BPF map updates) -->
+  <line x1="450" y1="350" x2="490" y2="258" class="arrow-feed"/>
+  <text x="400" y="310" class="feed-label">map sync</text>
+
+  <!-- Behavioral Engine → downstream modules -->
+  <line x1="560" y1="480" x2="310" y2="560" class="arrow-hot"/>
+  <line x1="640" y1="480" x2="680" y2="560" class="arrow"/>
+  <line x1="730" y1="480" x2="1020" y2="560" class="arrow"/>
+
+  <text x="70" y="810" class="subtitle">Rendered as SVG for crisp display on GitHub and dark/light themes.</text>
+</svg>

@@ -1,0 +1,27 @@
+[package]
+name = "tarpit"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "tarpit"
+path = "src/lib.rs"
+
+[[bin]]
+name = "tarpit"
+path = "src/main.rs"
+
+[dependencies]
+common = { path = "../common", default-features = false, features = ["user"] }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }
+hyper = { workspace = true }
+hyper-util = { workspace = true }
+http-body-util = { workspace = true }
+hyperlocal = { workspace = true }
+rand = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+nix = { workspace = true }

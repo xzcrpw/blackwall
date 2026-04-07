@@ -1,0 +1,20 @@
+# Blackwall userspace daemon — multi-stage build
+# Stage 1: Build the Rust binary
+FROM rust:1.87-bookworm AS builder
+WORKDIR /build
+COPY . .
+RUN cargo build --release --bin blackwall \
+    && strip target/release/blackwall
+
+# Stage 2: Minimal runtime image
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    iproute2 \
+    libelf1 \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /build/target/release/blackwall /usr/local/bin/blackwall
+RUN useradd -r -s /usr/sbin/nologin blackwall
+# eBPF requires root/CAP_BPF — runs as root in container, limited by securityContext
+ENTRYPOINT ["/usr/local/bin/blackwall"]
+CMD ["/etc/blackwall/config.toml"]

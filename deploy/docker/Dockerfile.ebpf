@@ -1,0 +1,16 @@
+# Blackwall eBPF programs — init container
+# Builds the BPF object file with nightly + bpfel target
+FROM rust:1.87-bookworm AS builder
+RUN rustup toolchain install nightly \
+    && rustup component add rust-src --toolchain nightly
+WORKDIR /build
+COPY . .
+RUN cd blackwall-ebpf && \
+    cargo +nightly build \
+    --target bpfel-unknown-none \
+    -Z build-std=core \
+    --release
+
+# Stage 2: Tiny image with just the BPF binary
+FROM busybox:1.37
+COPY --from=builder /build/target/bpfel-unknown-none/release/blackwall-ebpf /opt/blackwall/blackwall-ebpf

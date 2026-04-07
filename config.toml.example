@@ -1,0 +1,43 @@
+# Blackwall — Example Configuration
+# Copy to config.toml and adjust for your environment.
+
+[network]
+# Network interface to attach XDP program to
+interface = "eth0"
+# XDP attach mode: "generic", "native", or "offload"
+xdp_mode = "generic"
+
+[thresholds]
+# Byte diversity score above which a packet is anomalous (range 0–7936)
+entropy_anomaly = 6000
+
+[tarpit]
+enabled = true
+# Port the tarpit honeypot listens on
+port = 2222
+# Jitter parameters (milliseconds)
+base_delay_ms = 100
+max_delay_ms = 30000
+jitter_ms = 500
+
+[ai]
+enabled = true
+# Ollama API endpoint
+ollama_url = "http://localhost:11434"
+# Primary and fallback LLM models (must be ≤3B params for 8GB VRAM)
+model = "qwen3:1.7b"
+fallback_model = "qwen3:0.6b"
+# Max tokens for classification response
+max_tokens = 512
+# Timeout for LLM requests (milliseconds)
+timeout_ms = 5000
+
+[rules]
+# Static blocklist — IPs to always DROP
+blocklist = [
+    # "192.168.1.100",
+]
+# Static allowlist — IPs to always PASS
+allowlist = [
+    "127.0.0.1",
+]

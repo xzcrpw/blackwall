@@ -1,0 +1,39 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Release.Name }}-blackwall
+  labels:
+    app.kubernetes.io/name: blackwall
+    app.kubernetes.io/instance: {{ .Release.Name }}
+rules:
+  # Watch BlackwallPolicy CRDs
+  - apiGroups: ["security.blackwall.io"]
+    resources: ["blackwallpolicies"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["security.blackwall.io"]
+    resources: ["blackwallpolicies/status"]
+    verbs: ["patch", "update"]
+  # Read node info for interface auto-detection
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list"]
+  # ConfigMaps for config
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Release.Name }}-blackwall
+  labels:
+    app.kubernetes.io/name: blackwall
+    app.kubernetes.io/instance: {{ .Release.Name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ .Release.Name }}-blackwall
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.serviceAccount.name }}
+    namespace: {{ .Release.Namespace }}

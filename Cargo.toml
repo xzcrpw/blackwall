@@ -1,0 +1,36 @@
+[workspace]
+resolver = "2"
+members = [
+    "common",
+    "blackwall",
+    "blackwall-controller",
+    "tarpit",
+    "xtask",
+    "hivemind",
+    "hivemind-api",
+    "hivemind-dashboard",
+]
+exclude = ["blackwall-ebpf"]
+# blackwall-ebpf excluded — built separately with nightly + bpfel target
+
+[workspace.dependencies]
+common = { path = "common" }
+aya = { version = "0.13", features = ["async_tokio"] }
+aya-log = "0.2"
+tokio = { version = "1", features = ["macros", "rt", "net", "io-util", "signal", "time", "sync"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+anyhow = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+papaya = "0.2"
+crossbeam-queue = "0.3"
+hyper = { version = "1", features = ["client", "http1"] }
+hyper-util = { version = "0.1", features = ["tokio", "client-legacy", "http1"] }
+hyper-rustls = { version = "0.27", default-features = false, features = ["ring", "webpki-roots", "http1"] }
+http-body-util = "0.1"
+hyperlocal = "0.9"
+nix = { version = "0.29", features = ["signal", "net"] }
+rand = "0.8"
+ring = "0.17"

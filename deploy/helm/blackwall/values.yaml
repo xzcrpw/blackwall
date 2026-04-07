@@ -1,0 +1,92 @@
+# Blackwall Helm Chart — Default Values
+# Override per environment via -f values-production.yaml
+
+# Container image
+image:
+  repository: ghcr.io/blackwall-fw/blackwall
+  tag: "2.0.0"
+  pullPolicy: IfNotPresent
+
+# eBPF image (init container builds/copies the BPF object)
+ebpfImage:
+  repository: ghcr.io/blackwall-fw/blackwall-ebpf
+  tag: "2.0.0"
+  pullPolicy: IfNotPresent
+
+# DaemonSet scheduling
+nodeSelector: {}
+tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+affinity: {}
+
+# Resource limits
+resources:
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+
+# Network configuration
+network:
+  # Interface to attach XDP program to.
+  # "auto" = detect primary interface via default route.
+  interface: "auto"
+  # XDP attach mode: generic, native, offload
+  xdpMode: "generic"
+
+# Tarpit honeypot
+tarpit:
+  enabled: true
+  port: 2222
+  baseDelayMs: 100
+  maxDelayMs: 30000
+  jitterMs: 500
+
+# AI/LLM classification
+ai:
+  enabled: true
+  ollamaUrl: "http://ollama.default.svc.cluster.local:11434"
+  model: "qwen3:1.7b"
+  fallbackModel: "qwen3:0.6b"
+  maxTokens: 512
+  timeoutMs: 30000
+
+# Threat feeds
+feeds:
+  enabled: true
+  refreshIntervalSecs: 3600
+
+# HiveMind P2P mesh
+hivemind:
+  enabled: false
+  bootstrapPeers: []
+
+# PCAP forensic capture
+pcap:
+  enabled: false
+  storageClass: ""
+  storageSize: "10Gi"
+
+# Metrics (Prometheus)
+metrics:
+  enabled: true
+  port: 9090
+
+# ServiceAccount
+serviceAccount:
+  create: true
+  name: "blackwall"
+  annotations: {}
+
+# Security context (eBPF requires CAP_BPF + CAP_NET_ADMIN)
+securityContext:
+  privileged: false
+  capabilities:
+    add:
+      - BPF
+      - NET_ADMIN
+      - SYS_ADMIN
+      - PERFMON

@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Release.Name }}-blackwall
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: blackwall
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/component: dataplane
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: blackwall
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: blackwall
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ .Values.metrics.port | quote }}
+    spec:
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        # Copy pre-built eBPF object into shared volume
+        - name: ebpf-loader
+          image: "{{ .Values.ebpfImage.repository }}:{{ .Values.ebpfImage.tag }}"
+          imagePullPolicy: {{ .Values.ebpfImage.pullPolicy }}
+          command: ["cp", "/opt/blackwall/blackwall-ebpf", "/bpf/blackwall-ebpf"]
+          volumeMounts:
+            - name: bpf-objects
+              mountPath: /bpf
+      containers:
+        - name: blackwall
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "/etc/blackwall/config.toml"
+          env:
+            - name: BLACKWALL_EBPF_PATH
+              value: "/bpf/blackwall-ebpf"
+            - name: RUST_LOG
+              value: "blackwall=info"
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: bpf-objects
+              mountPath: /bpf
+              readOnly: true
+            - name: config
+              mountPath: /etc/blackwall
+              readOnly: true
+            - name: bpf-fs
+              mountPath: /sys/fs/bpf
+            {{- if .Values.pcap.enabled }}
+            - name: pcap-storage
+              mountPath: /var/lib/blackwall/pcap
+            {{- end }}
+          ports:
+            {{- if .Values.tarpit.enabled }}
+            - name: tarpit
+              containerPort: {{ .Values.tarpit.port }}
+              protocol: TCP
+              hostPort: {{ .Values.tarpit.port }}
+            {{- end }}
+            {{- if .Values.metrics.enabled }}
+            - name: metrics
+              containerPort: {{ .Values.metrics.port }}
+              protocol: TCP
+            {{- end }}
+          livenessProbe:
+            exec:
+              command: ["cat", "/proc/1/status"]
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            exec:
+              command: ["test", "-f", "/sys/fs/bpf/blackwall_xdp"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: bpf-objects
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: {{ .Release.Name }}-config
+        - name: bpf-fs
+          hostPath:
+            path: /sys/fs/bpf
+            type: DirectoryOrCreate
+        {{- if .Values.pcap.enabled }}
+        - name: pcap-storage
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-pcap
+        {{- end }}

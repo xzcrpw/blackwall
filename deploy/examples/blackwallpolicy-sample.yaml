@@ -1,0 +1,34 @@
+# Example BlackwallPolicy — drop known bad IPs, tarpit scanners
+apiVersion: security.blackwall.io/v1alpha1
+kind: BlackwallPolicy
+metadata:
+  name: default-policy
+  namespace: blackwall-system
+spec:
+  rules:
+    blocklist:
+      - ip: "192.168.1.100"
+        action: drop
+        duration: "1h"
+      - ip: "10.0.0.0/8"
+        action: tarpit
+      - ip: "203.0.113.0/24"
+        action: drop
+    allowlist:
+      - ip: "192.168.0.0/16"
+        reason: "internal network"
+  thresholds:
+    entropyAnomaly: 6500
+    synFloodRate: 1000
+  tarpit:
+    enabled: true
+    port: 2222
+    baseDelayMs: 100
+    maxDelayMs: 30000
+  ai:
+    enabled: true
+    model: "qwen3:1.7b"
+    fallbackModel: "qwen3:0.6b"
+  network:
+    interface: "auto"
+    xdpMode: "native"
