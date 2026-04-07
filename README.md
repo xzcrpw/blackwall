@@ -33,7 +33,7 @@
 ---
 
 **TL;DR:** I was playing Cyberpunk 2077 and thought: *"What if the Blackwall was real?"* So I wrote an adaptive eBPF firewall with an AI honeypot that pretends to be a compromised Linux server.  
-**~8,500 lines of Rust. Zero `unwrap()`s. One person.**
+**~18,000 lines of Rust. Zero `unwrap()`s. One person.**
 
 ---
 
