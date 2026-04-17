@@ -48,18 +48,14 @@ pub fn is_routable_addr(addr: &Multiaddr) -> bool {
 /// Users can disable them by setting `bootstrap.use_default_nodes = false`.
 ///
 /// IMPORTANT: Update these when deploying new bootstrap infrastructure.
-/// Format: "/dns4/<hostname>/udp/4001/quic-v1/p2p/<peer-id>"
-///
-/// Placeholder entries below — replace with real VPS PeerIds after
-/// first deployment. The nodes won't connect until real PeerIds exist,
-/// which is safe (they just log a warning and fall back to mDNS).
+/// Format: "/ip4/<ip>/udp/4001/quic-v1/p2p/<peer-id>"
 pub const DEFAULT_BOOTSTRAP_NODES: &[&str] = &[
-    // EU-West (Amsterdam) — primary bootstrap
-    // "/dns4/boot-eu1.blackwall.network/udp/4001/quic-v1/p2p/<PEER_ID>",
-    // US-East (New York) — secondary bootstrap
-    // "/dns4/boot-us1.blackwall.network/udp/4001/quic-v1/p2p/<PEER_ID>",
-    // AP-South (Singapore) — tertiary bootstrap
-    // "/dns4/boot-ap1.blackwall.network/udp/4001/quic-v1/p2p/<PEER_ID>",
+    // EU-West (OVH France) — primary bootstrap
+    "/ip4/135.125.234.128/udp/4001/quic-v1/p2p/12D3KooWGb9Nkhao6qKdfQPD3yxyktbDAyDunngMGcyxM7VLg74b",
+    // EU-West (OVH France) — secondary bootstrap
+    "/ip4/57.128.255.94/udp/4001/quic-v1/p2p/12D3KooWDW6kR7SX5RZyaUUokEdeWKMVyAyF8KNedxvhagDPUrW7",
+    // NA-East (OVH Canada) — tertiary bootstrap
+    "/ip4/158.69.194.27/udp/4001/quic-v1/p2p/12D3KooWDeZf7zKtFU2DEzbuUpNPQ5d3Cjvw5rbRXKA7eF4vk4JF",
 ];
 
 /// Connect to bootstrap nodes (default + user-configured) and initiate
